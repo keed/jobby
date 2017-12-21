@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>JOBBY!</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/stylesheet/styles.css">
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">JOBBY</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="">Jobs</a></li>
+          <li><a href="">Chat</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/auth/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+          <li><a href="/auth/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+        </ul>
+      </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+    {{#if errors}}
+      {{#each errors as |e|}}
+        <div class="alert alert-danger alert-dismissable fade in">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Error!</strong> {{e.msg}}
+        </div>
+      {{/each}}
+    {{/if}}
+
+    {{#if alerts.error}}
+      {{#each alerts.error as |msg|}}
+        <div class="alert alert-danger alert-dismissable fade in">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Error!</strong> {{msg}}
+        </div>
+      {{/each}}
+    {{/if}}
+
+    {{#if alerts.success}}
+      {{#each alerts.success as |msg|}}
+        <div class="alert alert-success alert-dismissable fade in">
+          <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+          <strong>Success!</strong> {{msg}}
+        </div>
+      {{/each}}
+    {{/if}}
+    {{{body}}}
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</html>
