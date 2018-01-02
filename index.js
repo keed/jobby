@@ -9,6 +9,8 @@ const path = require('path')
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash')
 const passport = require('passport');
+const fs = require('fs');
+
 const port = process.env.PORT || 3000
 
 
@@ -16,9 +18,63 @@ const routes = require('./routes/routes')
 const dbConfig = require('./config/dbConfig')
 
 const app = express()
+//==================== socket.io ====================
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+let users = []
+
+io.on('connection', (socket) =>{
+  // console.log('a user connected');
+
+  socket.on('disconnect',() => {
+    if (!socket.username) return;
+    users.splice(users.indexOf(socket.username), 1);
+    updateUsers();
+  });
+
+  socket.on('send message',(data) =>{
+    // console.log(data);
+    io.emit('show message', {msg:data, user:socket.username})
+    fs.appendFile("chatlog.txt", socket.username+": "+data+"\n", function(error) {
+        if(error) throw error;
+    });
+  });
+
+  socket.on('show typing',(data) =>{
+    io.emit('show typing message', {msg:data, user:socket.username})
+  });
+
+  socket.on('set user', (data,callback) => {
+    if (users.indexOf(data) != -1) {
+      callback(false)
+    }
+    else {
+      callback(true)
+      socket.username = data;
+      users.push (socket.username);
+      updateUsers();
+    }
+  })
+
+  function updateUsers() {
+    io.emit('users',users);
+  }
+
+
+  //
+  // socket.on('chat message', function(msg){
+  //   console.log('message: ' + msg);
+  // });
+  //
+  // io.emit('some event', { for: 'everyone' });
+  //
+  // socket.on('chat message', function(msg){
+  //   io.emit('chat message', msg);
+  // });
+});
 //==================== Config ====================
 mongoose.Promise = global.Promise
-mongoose.connect(dbConfig.urlLive, {
+mongoose.connect(dbConfig.urlTest, {
   useMongoClient: true
 }).then (
   () => {
@@ -79,6 +135,6 @@ app.use(expressValidator({
 app.use('/',routes)
 
 
-app.listen(port, () => {
-  console.log('---Server Started---')
+server.listen(port, () => {
+  console.log('---Server Started (Express io)---')
 })
